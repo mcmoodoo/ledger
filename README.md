@@ -8,12 +8,6 @@ psql --username=postgres --host=localhost --dbname=dbname -f sql/create-table.sq
 
 
 ## TODOs
-### Add dotenvy
-
-Add the dotenvy crate to the project
-```bash
-cargo add dotenvy
-```
 
 Add the rust code to pull the value from the local env var. Not sure if having it in a `.env` file is sufficient or loading the file is necessary?
 ```rust
