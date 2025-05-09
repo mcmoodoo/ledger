@@ -1,15 +1,14 @@
 ## Journal
 
-This will create the table 
-```bash
-psql --username=postgres --host=localhost --dbname=dbname -f sql/create-table.sql 
-
-```
-
+I need to build a microservice in Rust that will:
+    - expose a CRUD API
+    - allow a person to create an account with the exchange
+    - allow a person to deposit funds
+    - allow a person to provide personal info for KYC
+    - allow account holders to send funds internally to other account holders
 
 ## TODOs
 
-Add the rust code to pull the value from the local env var. Not sure if having it in a `.env` file is sufficient or loading the file is necessary?
 ```rust
 use sqlx::{Pool, Postgres};
 use dotenvy::dotenv;
@@ -18,6 +17,7 @@ use std::env;
 async fn create_pool() -> Pool<Postgres> {
     dotenv().ok();
     let db_url = env::var("DATABASE_URL").expect("Missing DATABASE_URL");
+    println!("The db_url is {}", &db_url);
     sqlx::PgPool::connect(&db_url).await.unwrap()
 }
 ```
