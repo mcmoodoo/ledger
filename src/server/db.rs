@@ -4,12 +4,12 @@ use sqlx::postgres::{PgPool, PgPoolOptions};
 use sqlx::types::BigDecimal;
 use sqlx::{Pool, Postgres};
 use std::env;
+use uuid::Uuid;
 
-pub async fn perform_run() -> Result<(), sqlx::Error> {
-
-    // add_funds(&pool, new_account, BigDecimal::from(102)).await?;
-
-    Ok(())
+#[derive(sqlx::FromRow, serde::Serialize)]
+pub struct Account {
+    id: Uuid,
+    balance: BigDecimal,
 }
 
 pub async fn get_accounts_count(pool: &PgPool) -> Json<u64> {
@@ -19,6 +19,15 @@ pub async fn get_accounts_count(pool: &PgPool) -> Json<u64> {
         .unwrap();
 
     Json(row.0.try_into().unwrap())
+}
+
+pub async fn list_accounts(pool: &PgPool) -> Json<Vec<Account>> {
+    let rows = sqlx::query_as!(Account, "SELECT id, balance FROM accounts")
+        .fetch_all(pool)
+        .await
+        .unwrap();
+
+    Json(rows)
 }
 
 pub async fn create_pool() -> Result<Pool<Postgres>, sqlx::Error> {
@@ -31,25 +40,17 @@ pub async fn create_pool() -> Result<Pool<Postgres>, sqlx::Error> {
     Ok(pool)
 }
 
-pub async fn add_account(pool: &PgPool, amount: u64) -> Json<uuid::Uuid> {
-    let user_id = uuid::Uuid::new_v4();
-
+pub async fn add_account(pool: &PgPool, amount: u64) {
     sqlx::query!(
-        "INSERT INTO accounts (user_id, balance) VALUES($1, $2)",
-        user_id,
+        "INSERT INTO accounts (balance) VALUES($1)",
         BigDecimal::from(amount)
     )
     .execute(pool)
-    .await.unwrap();
-
-    Json(user_id)
+    .await
+    .unwrap();
 }
 
-pub async fn add_funds(
-    pool: &PgPool,
-    account: uuid::Uuid,
-    amount: BigDecimal,
-) {
+pub async fn add_funds(pool: &PgPool, account: uuid::Uuid, amount: BigDecimal) {
     #[cfg(debug_assertions)]
     println!("Trying to fund the account {} with ${}", account, amount);
     sqlx::query!(

@@ -1,11 +1,12 @@
 use dotenvy::dotenv;
-use ledger::server;
+
+mod server;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
 
-    let connection_pool = server::dal::create_pool().await?;
+    let connection_pool = server::db::create_pool().await?;
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
 
