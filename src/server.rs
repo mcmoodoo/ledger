@@ -23,7 +23,6 @@ struct AddFundsRequest {
 
 pub fn router(pool: PgPool) -> Router {
     Router::new()
-        .route("/count", get(get_accounts_count))
         .route("/accounts", get(list_accounts).post(create_account))
         .route("/accounts/{id}", get(get_account).delete(delete_account))
         .route("/accounts/{id}/fund", post(fund_account))
@@ -33,24 +32,19 @@ pub fn router(pool: PgPool) -> Router {
 
 async fn get_account() -> impl IntoResponse {}
 
-async fn list_accounts(State(pool): State<PgPool>) -> Json<Vec<db::Account>> {
-    db::list_accounts(&pool).await
+async fn list_accounts(State(pool): State<PgPool>) -> Result<impl IntoResponse, impl IntoResponse> {
+    db::list_accounts(&pool).await.map_err(|err| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", err)))
 }
 
 async fn withdraw_from_account() -> impl IntoResponse {}
 
 async fn delete_account() -> impl IntoResponse {}
 
-async fn get_accounts_count(State(pool): State<PgPool>) -> impl IntoResponse {
-    db::get_accounts_count(&pool).await
-}
-
 async fn create_account(
     State(pool): State<PgPool>,
     Json(payload): Json<AccountRequest>,
-) -> impl IntoResponse {
-    // TODO: match the response from the add_account and return proper response code based on that
-    db::add_account(&pool, payload.amount).await
+) -> Result<impl IntoResponse, impl IntoResponse> {
+    db::add_account(&pool, payload.amount).await.map_err(|err| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", err)))
 }
 
 async fn fund_account(
@@ -58,6 +52,5 @@ async fn fund_account(
     Path(id): Path<Uuid>,
     Json(payload): Json<AddFundsRequest>,
 ) -> impl IntoResponse {
-    db::add_funds(&pool, id, payload.amount.into()).await;
-    StatusCode::OK
+    db::add_funds(&pool, id, payload.amount.into()).await.map_err(|err| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", err)))
 }
