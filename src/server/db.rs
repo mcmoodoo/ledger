@@ -41,7 +41,11 @@ pub async fn add_account(pool: &PgPool, amount: u64) -> Result<(), sqlx::Error> 
     Ok(())
 }
 
-pub async fn add_funds(pool: &PgPool, account: uuid::Uuid, amount: BigDecimal) -> Result<(), sqlx::Error> {
+pub async fn add_funds(
+    pool: &PgPool,
+    account: uuid::Uuid,
+    amount: BigDecimal,
+) -> Result<(), sqlx::Error> {
     #[cfg(debug_assertions)]
     println!("Trying to fund the account {} with ${}", account, amount);
     sqlx::query!(
