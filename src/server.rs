@@ -10,6 +10,9 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 pub mod db;
+pub mod auth;
+
+use auth::auth_routes;
 
 #[derive(Deserialize)]
 struct AccountRequest {
@@ -22,12 +25,18 @@ struct AddFundsRequest {
 }
 
 pub fn router(pool: PgPool) -> Router {
+    let default_credentials = auth::handler::LoginRequest {
+        login: "Rashid".to_string(),
+        password: "secret".to_string(),
+    };
+
     Router::new()
         .route("/accounts", get(list_accounts).post(create_account))
         .route("/accounts/{id}", get(get_account).delete(delete_account))
         .route("/accounts/{id}/fund", post(fund_account))
         .route("/accounts/{id}/withdraw", post(withdraw_from_account))
         .with_state(pool)
+        .nest("/auth", auth_routes())
 }
 
 async fn get_account() -> impl IntoResponse {}
