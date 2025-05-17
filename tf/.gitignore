@@ -1,12 +1,12 @@
 # Terraform state
-terraform.tfstate
-terraform.tfstate.backup
-.terraform.tfstate.lock.info
+*/terraform.tfstate
+*/terraform.tfstate.backup
+*/.terraform.tfstate.lock.info
 
 # Local Terraform directories
-.terraform/
+*/.terraform/
 
 # Crash logs
-crash.log
-*.tfplan
+*/crash.log
+*/*.tfplan
 
