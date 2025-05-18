@@ -29,7 +29,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["98.109.114.2/32"]
+    cidr_blocks = ["24.115.43.238/32"]
   }
 
   egress {
@@ -50,12 +50,27 @@ resource "aws_key_pair" "bastion_key" {
 }
 
 resource "aws_instance" "bastion" {
-  ami           = "ami-0779caf41f9ba54f0"
+  ami           = "ami-010c8d421530f08bf"
   instance_type = "t2.small"
   subnet_id     = module.vpc.public_subnets[0]
   # associate_public_ip_address = true
   key_name               = aws_key_pair.bastion_key.key_name
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              apt update && apt upgrade -y
+              apt install -y curl build-essential
+
+              # Install Rust (cargo comes with it)
+              curl https://sh.rustup.rs -sSf | sh -s -- -y
+  
+              # set vim bindings echo "set -o vi" >> ~/.bashrc
+              echo "set -o vi" >> $HOME/.bashrc
+
+              # Make cargo available system-wide (optional)
+              echo 'source $HOME/.cargo/env' >> /etc/profile
+              EOF
 
   tags = {
     Name = "bastion-host"
