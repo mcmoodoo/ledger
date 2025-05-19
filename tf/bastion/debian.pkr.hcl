@@ -36,8 +36,26 @@ build {
   provisioner "shell" {
     inline = [
       "sudo apt-get update -y",
-      "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y fzf git gh lcov neofetch vim curl unzip",
-      "echo 'eval \"$(/usr/local/bin/starship init bash)\"' | sudo tee -a /etc/bash.bashrc > /dev/null"
+      "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y fzf git gh lcov neofetch vim curl wget unzip fontconfig build-essential",
+
+      # Install Rust non-interactively (installs rustup, cargo, rustc)
+      "curl https://sh.rustup.rs -sSf | sh -s -- -y",
+      "echo '. $HOME/.cargo/env' >> $HOME/.bashrc",
+      ". $HOME/.cargo/env",
+
+      "cargo install bat zellij yazi-cli xh viu sd ripgrep fd-find eza"
+
+      # Install Starship prompt
+      "mkdir -p /tmp/starship",
+      "curl -sSL https://starship.rs/install.sh | sh -s -- --yes --bin-dir /tmp/starship",
+      "sudo mv /tmp/starship/starship /usr/local/bin/",
+      "echo 'eval \"$(/usr/local/bin/starship init bash)\"' | sudo tee -a /etc/bash.bashrc > /dev/null",
+
+      # Install MesloLGS Nerd Font
+      "wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Meslo.zip -O /tmp/Meslo.zip",
+      "sudo mkdir -p /usr/local/share/fonts/meslo",
+      "sudo unzip -o /tmp/Meslo.zip -d /usr/local/share/fonts/meslo",
+      "sudo fc-cache -fv"
     ]
   }
 }
