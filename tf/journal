@@ -1,0 +1,3 @@
+- need to share VPC between Bastion and EKS
+- need to share other resources including the Elastic IP somehow
+- 
