@@ -2,33 +2,29 @@ provider "aws" {
   region = var.region
 }
 
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.21.0"
-
-  name = "eks-vpc"
-  cidr = "10.0.0.0/16"
-
-  azs             = ["${var.region}a", "${var.region}b"]
-  public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
-
-  enable_nat_gateway = true
-  single_nat_gateway = true
+# 🔗 Pull VPC info from the Bastion project's remote state
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+  config = {
+    bucket = "mcmoodoo-terraform-state-bucket"
+    key    = "bastion/terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.8.4"
+  version = "~> 20.31"
 
   cluster_name    = var.cluster_name
   cluster_version = "1.32"
-  subnet_ids      = module.vpc.private_subnets
-  vpc_id          = module.vpc.vpc_id
+  
+  vpc_id     = data.terraform_remote_state.bastion.outputs.vpc_id
+  subnet_ids = data.terraform_remote_state.bastion.outputs.private_subnets
 
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
-  cluster_endpoint_public_access_cidrs = ["98.109.114.2/32"]
+  cluster_endpoint_private_access        = true
+  cluster_endpoint_public_access         = true
+  cluster_endpoint_public_access_cidrs   = ["140.228.15.26/32", "50.17.239.156/32"]
 
   eks_managed_node_groups = {
     default = {

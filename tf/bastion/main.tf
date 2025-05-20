@@ -29,7 +29,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["209.162.61.154/32"]
+    cidr_blocks = ["140.228.15.26/32"]
   }
 
   egress {
@@ -50,12 +50,14 @@ resource "aws_key_pair" "bastion_key" {
 }
 
 resource "aws_instance" "bastion" {
-  ami           = "ami-0698f542789a8d344"
+  ami           = "ami-049b02d7bde2565cf"
   instance_type = "t2.small"
   subnet_id     = module.vpc.public_subnets[0]
   # associate_public_ip_address = true
   key_name               = aws_key_pair.bastion_key.key_name
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+
+  iam_instance_profile = aws_iam_instance_profile.bastion_profile.name
 
   user_data = <<-EOF
               #!/bin/bash
@@ -76,4 +78,14 @@ resource "aws_instance" "bastion" {
 
 resource "aws_eip" "bastion_eip" {
   instance = aws_instance.bastion.id
+}
+
+terraform {
+  backend "s3" {
+    bucket         = "mcmoodoo-terraform-state-bucket"
+    key            = "bastion/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "terraform-locks"  # optional but useful
+  }
 }
