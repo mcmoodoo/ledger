@@ -36,7 +36,7 @@ build {
   provisioner "shell" {
     inline = [
       "sudo apt-get update -y",
-      "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y fzf git gh lcov neofetch ncurses-term vim curl wget unzip fontconfig build-essential",
+      "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y fzf git gh lcov neofetch ncurses-term vim curl wget unzip fontconfig build-essential gnupg software-properties-common",
 
       # Install Rust non-interactively (installs rustup, cargo, rustc)
       "curl https://sh.rustup.rs -sSf | sh -s -- -y",
