@@ -29,7 +29,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["140.228.15.26/32"]
+    cidr_blocks = ["71.194.161.62/32"]
   }
 
   egress {
@@ -61,15 +61,33 @@ resource "aws_instance" "bastion" {
 
   user_data = <<-EOF
               #!/bin/bash
+              set -e
+
               apt update && apt upgrade -y
+              apt install -y gnupg software-properties-common curl
 
-              # set vim bindings echo "set -o vi" >> ~/.bashrc
-              echo "set -o vi" >> $HOME/.bashrc
-              . $HOME/.bashrc
+              curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
 
-              # Make cargo available system-wide (optional)
-              # echo 'source $HOME/.cargo/env' >> /etc/profile
+              echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+              | tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
+
+              apt update
+              apt install -y terraform
+
+              # Shell customizations
+              echo "set -o vi" >> /home/ubuntu/.bashrc
+              echo "alias ll='ls -al'" >> /home/ubuntu/.bashrc
+              chown ubuntu:ubuntu /home/ubuntu/.bashrc
+
+              # Optional: source bashrc if running interactively
+              # source /home/ubuntu/.bashrc
               EOF
+
+  # So I've got this bastion with aws setup. I need to set up the kubectl ahead of time?
+  # How will I access the eks control plane node?
+  # Let's configure git on the bastion to be able to pull the project from my github and apply the EKS tf. Oh and I need terraform on the bastion instance.
+  # That means I will need to place a private key in my EC2 instance, is that secure? What are ways to do it?
+  # so I created a granular access point with a deploy key scoped only for the ledger repo read-access-limited. I can now upload the private key to the bastion ec2
 
   tags = {
     Name = "bastion-host"
@@ -86,6 +104,6 @@ terraform {
     key            = "bastion/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
-    dynamodb_table = "terraform-locks"  # optional but useful
+    dynamodb_table = "terraform-locks" # optional but useful
   }
 }
