@@ -23,7 +23,7 @@ resource "aws_iam_role_policy" "eks_access" {
       {
         Effect = "Allow",
         Action = [
-          "eks:*",
+          "eks:DescribeCluster",
           "sts:GetCallerIdentity"
         ],
         Resource = "*"
@@ -48,49 +48,6 @@ resource "aws_iam_role_policy" "eks_access" {
       }
     ]
   })
-}
-
-resource "aws_iam_role_policy" "kms_and_logs_access" {
-  name = "kms-and-logs-access"
-  role = aws_iam_role.bastion_eks_access.name
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "kms:CreateKey",
-          "kms:TagResource",
-          "kms:DescribeKey"
-        ],
-        Resource = "*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:PutRetentionPolicy"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "eks_full_access" {
-  role       = aws_iam_role.bastion_eks_access.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "iam_full_access" {
-  role       = aws_iam_role.bastion_eks_access.name
-  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "ec2_full_access" {
-  role       = aws_iam_role.bastion_eks_access.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
 }
 
 resource "aws_iam_instance_profile" "bastion_profile" {
