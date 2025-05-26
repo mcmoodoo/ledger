@@ -29,7 +29,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["71.194.161.62/32"]
+    cidr_blocks = ["73.210.73.79/32"]
   }
 
   egress {
@@ -64,7 +64,7 @@ resource "aws_instance" "bastion" {
               set -e
 
               apt update && apt upgrade -y
-              apt install -y gnupg software-properties-common curl
+              apt install -y gnupg software-properties-common curl jq yq dnsutils stow fuse libfuse2 nodejs npm
 
               curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
 
@@ -74,13 +74,24 @@ resource "aws_instance" "bastion" {
               apt update
               apt install -y terraform
 
+              curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+              chmod u+x nvim-linux-x86_64.appimage
+
+              mkdir -p /opt/nvim
+              mv nvim-linux-x86_64.appimage /opt/nvim/nvim
+
+              echo "export PATH=\"$PATH:/opt/nvim/\"" >> ~/.bashrc
+
+              git clone https://github.com/mcmoodoo/dotfiles.git $HOME/dotfiles
+              
+              cd $HOME/dotfiles && stow nvim
+
               # Shell customizations
-              echo "set -o vi" >> /home/ubuntu/.bashrc
-              echo "alias ll='ls -al'" >> /home/ubuntu/.bashrc
-              chown ubuntu:ubuntu /home/ubuntu/.bashrc
+              echo "set -o vi" >> $HOME/.bashrc
+              echo "alias ll='ls -al'" >> $HOME/.bashrc
 
               # Optional: source bashrc if running interactively
-              # source /home/ubuntu/.bashrc
+              . $HOME/.bashrc
               EOF
 
   # So I've got this bastion with aws setup. I need to set up the kubectl ahead of time?

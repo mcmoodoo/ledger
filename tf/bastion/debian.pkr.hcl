@@ -36,7 +36,15 @@ build {
   provisioner "shell" {
     inline = [
       "sudo apt-get update -y",
-      "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y fzf git gh lcov neofetch ncurses-term vim curl wget unzip fontconfig build-essential gnupg software-properties-common",
+      "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y fzf git gh lcov neofetch ncurses-term vim curl wget unzip fontconfig build-essential gnupg software-properties-common dnsutils stow fuse libfuse2 nodejs npm",
+
+      "curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage",
+      "chmod u+x nvim-linux-x86_64.appimage",
+
+      "sudo mkdir -p /opt/nvim",
+      "sudo mv nvim-linux-x86_64.appimage /opt/nvim/nvim",
+
+      "export PATH=\"$PATH:/opt/nvim/\"",
 
       # Install Rust non-interactively (installs rustup, cargo, rustc)
       "curl https://sh.rustup.rs -sSf | sh -s -- -y",
