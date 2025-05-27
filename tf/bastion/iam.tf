@@ -29,21 +29,18 @@ resource "aws_iam_role_policy" "eks_access" {
         Resource = "*"
       },
       {
-        Effect = "Allow",
-        Action = [
-          "s3:GetObject",
-          "s3:ListBucket"
-        ],
-        Resource = [
-          "arn:aws:s3:::mcmoodoo-terraform-state-bucket",
-          "arn:aws:s3:::mcmoodoo-terraform-state-bucket/bastion/*"
-        ]
+        Effect   = "Allow",
+        Action   = "s3:ListBucket",
+        Resource = "arn:aws:s3:::mcmoodoo-terraform-state-bucket"
       },
       {
-        Effect = "Allow",
-        Action = [
-          "iam:GetRole"
-        ],
+        Effect   = "Allow",
+        Action   = "s3:GetObject",
+        Resource = "arn:aws:s3:::mcmoodoo-terraform-state-bucket/bastion/*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = "iam:GetRole",
         Resource = "arn:aws:iam::489475227541:role/bastion-eks-access-role"
       }
     ]

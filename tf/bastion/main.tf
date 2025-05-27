@@ -29,7 +29,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["73.210.73.79/32"]
+    cidr_blocks = ["24.1.239.67/32"]
   }
 
   egress {
@@ -86,7 +86,7 @@ resource "aws_instance" "bastion" {
               
               cd $HOME/dotfiles && stow nvim
 
-              # Shell customizations
+              # Shell customizations TODO: fix this ends up elsewhere
               echo "set -o vi" >> $HOME/.bashrc
               echo "alias ll='ls -al'" >> $HOME/.bashrc
 
