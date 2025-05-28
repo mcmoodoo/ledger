@@ -59,41 +59,7 @@ resource "aws_instance" "bastion" {
 
   iam_instance_profile = aws_iam_instance_profile.bastion_profile.name
 
-  user_data = <<-EOF
-              #!/bin/bash
-              set -e
-
-              apt update && apt upgrade -y
-              apt install -y gnupg software-properties-common curl jq yq dnsutils stow fuse libfuse2 nodejs npm
-
-              curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
-
-              echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-              | tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
-
-              apt update
-              apt install -y terraform
-
-              curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
-              chmod u+x nvim-linux-x86_64.appimage
-
-              mkdir -p /opt/nvim
-              mv nvim-linux-x86_64.appimage /opt/nvim/nvim
-
-              echo "export PATH=\"$PATH:/opt/nvim/\"" >> ~/.bashrc
-
-              git clone https://github.com/mcmoodoo/dotfiles.git $HOME/dotfiles
-              
-              cd $HOME/dotfiles && stow nvim
-
-              # Shell customizations TODO: fix this ends up elsewhere
-              echo "set -o vi" >> $HOME/.bashrc
-              echo "alias ll='ls -al'" >> $HOME/.bashrc
-
-              # Optional: source bashrc if running interactively
-              . $HOME/.bashrc
-              EOF
-
+  user_data = file("cloud-init.yaml")
   # So I've got this bastion with aws setup. I need to set up the kubectl ahead of time?
   # How will I access the eks control plane node?
   # Let's configure git on the bastion to be able to pull the project from my github and apply the EKS tf. Oh and I need terraform on the bastion instance.
