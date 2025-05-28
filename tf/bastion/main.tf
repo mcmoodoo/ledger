@@ -72,7 +72,8 @@ resource "aws_instance" "bastion" {
 }
 
 resource "aws_eip" "bastion_eip" {
-  instance = aws_instance.bastion.id
+  instance   = aws_instance.bastion.id
+  depends_on = [aws_instance.bastion]
 }
 
 terraform {
