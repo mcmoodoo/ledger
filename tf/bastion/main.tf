@@ -29,7 +29,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["24.1.239.67/32"]
+    cidr_blocks = ["172.58.164.214/32"]
   }
 
   egress {
@@ -65,6 +65,11 @@ resource "aws_instance" "bastion" {
   # Let's configure git on the bastion to be able to pull the project from my github and apply the EKS tf. Oh and I need terraform on the bastion instance.
   # That means I will need to place a private key in my EC2 instance, is that secure? What are ways to do it?
   # so I created a granular access point with a deploy key scoped only for the ledger repo read-access-limited. I can now upload the private key to the bastion ec2
+
+  root_block_device {
+    volume_size = 15 # in GiB
+    volume_type = "gp3"
+  }
 
   tags = {
     Name = "bastion-host"

@@ -2,3 +2,5 @@
 - need to share other resources including the Elastic IP somehow
 - need to have dotfiles cloned and stoned during the setup or better - image build, right now it's most likely cloning it into /root user during the setup
 - mason ruff installation fails: probably python needed, no actually 3.11. is installed.
+- weird thing with this cloud-init thing, but we will figure it out! Need to get kubectl, and other necessary things installed on the bastion EC2. Not giving up here!
+

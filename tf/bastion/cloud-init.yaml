@@ -3,6 +3,17 @@ package_update: true
 package_upgrade: true
 
 packages:
+  - fzf
+  - git
+  - gh
+  - lcov
+  - neofetch
+  - ncurses-term
+  - vim
+  - wget
+  - unzip
+  - fontconfig
+  - build-essential
   - gnupg
   - software-properties-common
   - curl
@@ -14,13 +25,19 @@ packages:
   - libfuse2
   - nodejs
   - npm
+  - luarocks
+  - python3
+  - python3-pip
+  - python3-venv
+  - python3-dev
+  - build-essential
 
 runcmd:
   - curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
   - echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list
   - apt update
   - apt install -y terraform
-
+  # Download and install Neovim AppImage
   - mkdir -p /opt/nvim
   - curl -Lo /opt/nvim/nvim https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
   - chmod +x /opt/nvim/nvim
@@ -31,3 +48,27 @@ runcmd:
   - su - admin -c 'mkdir -p ~/repos/ledger && git clone https://github.com/mcmoodoo/ledger ~/repos/ledger'
   - su - admin -c 'echo "set -o vi" >> ~/.bashrc'
   - su - admin -c 'echo "alias ll='\''ls -al'\''" >> ~/.bashrc'
+  # Export nvim path globally for all users
+  - echo 'export PATH="$PATH:/opt/nvim/"' >> /etc/profile.d/nvim-path.sh
+
+  # Install Rust non-interactively
+  - curl https://sh.rustup.rs -sSf | sh -s -- -y
+  - echo 'source /home/admin/.cargo/env' >> /etc/profile.d/rust-env.sh
+
+  # Install Rust CLI tools
+  - su - admin -c '[ -f /home/admin/.cargo/env ] && source /home/admin/.cargo/env && cargo install bat zellij yazi-cli xh viu sd ripgrep fd-find eza'
+
+  # Install Starship prompt
+  - mkdir -p /tmp/starship
+  - curl -sSL https://starship.rs/install.sh | sh -s -- --yes --bin-dir /tmp/starship
+  - mv /tmp/starship/starship /usr/local/bin/
+  - echo 'eval "$(starship init bash)"' >> /etc/bash.bashrc
+
+  # Bash customizations
+  - echo 'alias ll="ls -al"' >> /etc/bash.bashrc
+
+  # Install MesloLGS Nerd Font
+  - wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Meslo.zip -O /tmp/Meslo.zip
+  - mkdir -p /usr/local/share/fonts/meslo
+  - unzip -o /tmp/Meslo.zip -d /usr/local/share/fonts/meslo
+  - fc-cache -fv
