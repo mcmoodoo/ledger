@@ -68,7 +68,7 @@ resource "aws_instance" "bastion" {
   # so I created a granular access point with a deploy key scoped only for the ledger repo read-access-limited. I can now upload the private key to the bastion ec2
 
   root_block_device {
-    volume_size = 15 # in GiB
+    volume_size = 18 # in GiB
     volume_type = "gp3"
   }
 
