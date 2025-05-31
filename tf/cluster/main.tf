@@ -37,13 +37,3 @@ module "eks" {
 
   enable_irsa = true
 }
-
-terraform {
-  backend "s3" {
-    bucket         = "mcmoodoo-terraform-state-bucket"
-    key            = "cluster/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "terraform-locks" # optional but useful
-  }
-}
