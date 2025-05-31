@@ -17,14 +17,14 @@ module "eks" {
   version = "~> 20.31"
 
   cluster_name    = var.cluster_name
-  cluster_version = "1.32"
-  
+  cluster_version = "1.33"
+
   vpc_id     = data.terraform_remote_state.bastion.outputs.vpc_id
   subnet_ids = data.terraform_remote_state.bastion.outputs.private_subnets
 
-  cluster_endpoint_private_access        = true
-  cluster_endpoint_public_access         = true
-  cluster_endpoint_public_access_cidrs   = ["140.228.15.26/32", "50.17.239.156/32"]
+  cluster_endpoint_private_access      = true
+  cluster_endpoint_public_access       = true
+  cluster_endpoint_public_access_cidrs = ["140.228.15.26/32", "50.17.239.156/32"]
 
   eks_managed_node_groups = {
     default = {

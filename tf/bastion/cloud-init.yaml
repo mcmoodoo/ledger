@@ -41,6 +41,7 @@ runcmd:
   - mkdir -p /opt/nvim
   - curl -Lo /opt/nvim/nvim https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
   - chmod +x /opt/nvim/nvim
+  - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
   - su - admin -c 'echo "export PATH=\$PATH:/opt/nvim/" >> ~/.bashrc'
   - su - admin -c 'git clone https://github.com/mcmoodoo/dotfiles.git ~/dotfiles'
@@ -48,6 +49,9 @@ runcmd:
   - su - admin -c 'mkdir -p ~/repos/ledger && git clone https://github.com/mcmoodoo/ledger ~/repos/ledger'
   - su - admin -c 'echo "set -o vi" >> ~/.bashrc'
   - su - admin -c 'echo "alias ll='\''ls -al'\''" >> ~/.bashrc'
+  - su - admin -c 'echo "alias tf='\''terraform'\''" >> ~/.bashrc'
+  - su - admin -c 'echo "alias z='\''zellij'\''" >> ~/.bashrc'
+
   # Export nvim path globally for all users
   - echo 'export PATH="$PATH:/opt/nvim/"' >> /etc/profile.d/nvim-path.sh
 

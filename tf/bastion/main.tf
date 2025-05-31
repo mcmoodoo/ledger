@@ -26,10 +26,11 @@ resource "aws_security_group" "bastion_sg" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["172.58.164.214/32"]
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    # ipv6_cidr_blocks = ["2607:fb90:a080:d9d4:8e09:d8e1:1cf2:3df1/128"]
+    cidr_blocks = ["172.58.164.214/32"] # Kimberwick
   }
 
   egress {
