@@ -51,7 +51,7 @@ resource "aws_key_pair" "bastion_key" {
 }
 
 resource "aws_instance" "bastion" {
-  ami           = "ami-049b02d7bde2565cf"
+  ami           = var.ami
   instance_type = "t2.small"
   subnet_id     = module.vpc.public_subnets[0]
   # associate_public_ip_address = true
