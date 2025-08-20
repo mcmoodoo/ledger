@@ -30,7 +30,7 @@ resource "aws_security_group" "bastion_sg" {
     to_port   = 22
     protocol  = "tcp"
     # ipv6_cidr_blocks = ["2607:fb90:a080:d9d4:8e09:d8e1:1cf2:3df1/128"]
-    cidr_blocks = ["172.58.164.214/32"] # Kimberwick
+    cidr_blocks = ["0.0.0.0/0"] # Kimberwick
   }
 
   egress {
@@ -84,10 +84,10 @@ resource "aws_eip" "bastion_eip" {
 
 terraform {
   backend "s3" {
-    bucket         = "mcmoodoo-terraform-state-bucket"
-    key            = "bastion/terraform.tfstate"
-    region         = var.region
-    encrypt        = true
-    dynamodb_table = "terraform-locks" # optional but useful
+    bucket       = "mcmoodoo-terraform-state-bucket"
+    key          = "bastion/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
   }
 }

@@ -1,5 +1,5 @@
 variable "region" {
-  default = "eu-west-1"
+  default = "us-east-1"
 }
 
 variable "vpc-name" {
@@ -7,5 +7,5 @@ variable "vpc-name" {
 }
 
 variable "ami" {
-  default = "ami-049b02d7bde2565cf"
+  default = "ami-06b754880e711c8b4"
 }
